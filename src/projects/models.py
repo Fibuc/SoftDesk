@@ -14,7 +14,7 @@ class Project(models.Model):
 
     name = models.CharField(max_length=128)
     description = models.TextField(max_length=8192, blank=True)
-    type = models.CharField(choices=Type.choices, max_length=5)
+    type = models.CharField(choices=Type.choices, max_length=15)
     created_time = models.DateTimeField(auto_now_add=True)
 
     author = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -40,8 +40,8 @@ def create_contributor(sender, instance, created, **kwargs):
 class Contributor(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
 
-    project = models.ForeignKey(to=Project, on_delete=models.CASCADE)
-    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='contributed_by')
+    project = models.ForeignKey(to=Project, on_delete=models.CASCADE, related_name='contributed_by')
+    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('user', 'project',)
@@ -72,13 +72,13 @@ class Issue(models.Model):
 
     name = models.CharField(max_length=128)
     description = models.TextField(max_length=4096, blank=True)
-    priority = models.CharField(choices=Priority.choices, max_length=5)
-    type = models.CharField(choices=Type.choices, max_length=5)
-    progress = models.CharField(choices=Progress.choices, max_length=5, default=Progress.TO_DO)
+    priority = models.CharField(choices=Priority.choices, max_length=15)
+    type = models.CharField(choices=Type.choices, max_length=15)
+    progress = models.CharField(choices=Progress.choices, max_length=15, default=Progress.TO_DO)
     created_time = models.DateTimeField(auto_now_add=True)
 
     author = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    project = models.ForeignKey(to=Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(to=Project, on_delete=models.CASCADE, related_name='issues')
 
     def __str__(self) -> str:
         return self.name
@@ -89,4 +89,4 @@ class Comment(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
 
     author = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    issue = models.ForeignKey(to=Issue, on_delete=models.CASCADE)
+    issue = models.ForeignKey(to=Issue, on_delete=models.CASCADE, related_name='comments')
