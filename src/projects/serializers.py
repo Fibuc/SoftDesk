@@ -1,10 +1,10 @@
-from rest_framework.serializers import ModelSerializer, IntegerField
+from rest_framework import serializers
 
 from projects.models import Project, Issue, Comment, Contributor
 from authentication.serializers import UserListSerializer
 
 
-class ContributorProjectSerializer(ModelSerializer):
+class ContributorProjectSerializer(serializers.ModelSerializer):
 
     user = UserListSerializer()
     
@@ -13,27 +13,28 @@ class ContributorProjectSerializer(ModelSerializer):
         fields = ['id', 'user']
 
 
-class ProjectListSerializer(ModelSerializer):
+class ProjectListSerializer(serializers.ModelSerializer):
 
     author = UserListSerializer()
 
     class Meta:
         model = Project
-        fields = ['id', 'name', 'author', 'created_time']
+        fields = '__all__'
 
 
-class ProjectDetailSerializer(ModelSerializer):
+class ProjectDetailSerializer(serializers.ModelSerializer):
 
-    author = UserListSerializer()
-    contributors = ContributorProjectSerializer(source='contributed_by', many=True)
-    nb_of_issues = IntegerField(source='issues.count', read_only=True)
+    author = UserListSerializer(read_only=True)
+    contributors = ContributorProjectSerializer(source='contributed_by', many=True, read_only=True)
+    nb_of_issues = serializers.IntegerField(source='issues.count', read_only=True)
 
     class Meta:
         model = Project
-        fields = ['id', 'name', 'author', 'description', 'type', 'contributors', 'nb_of_issues', 'created_time']
+        fields = '__all__'
+        read_only_fields = ['author', 'contributors', 'created_time']
 
 
-class ContributorSerializer(ModelSerializer):
+class ContributorSerializer(serializers.ModelSerializer):
     
     user = UserListSerializer()
     project = ProjectListSerializer()
@@ -43,7 +44,7 @@ class ContributorSerializer(ModelSerializer):
         fields = ['id', 'user', 'project', 'created_time']
 
 
-class IssueListSerializer(ModelSerializer):
+class IssueListSerializer(serializers.ModelSerializer):
 
     project = ProjectListSerializer()
     author = UserListSerializer()
@@ -53,18 +54,37 @@ class IssueListSerializer(ModelSerializer):
         fields = ['id', 'name', 'project', 'author']
 
 
-class IssueDetailSerializer(ModelSerializer):
+class IssueDetailSerializer(serializers.ModelSerializer):
 
     project = ProjectListSerializer()
     author = UserListSerializer()
-    nb_of_comments = IntegerField(source='comments.count', read_only=True)
+    nb_of_comments = serializers.IntegerField(source='comments.count')
 
     class Meta:
         model = Issue
-        fields = ['id', 'name', 'project', 'author', 'description', 'priority', 'type', 'progress', 'nb_of_comments','created_time']
+        fields = ['id', 'name', 'project', 'author', 'description', 'priority', 'type', 'progress', 'nb_of_comments', 'created_time']
 
 
-class CommentDetailSerializer(ModelSerializer):
+class IssueCreateSerializer(serializers.ModelSerializer):
+
+    project = ProjectListSerializer(read_only=True)
+    author = UserListSerializer(read_only=True)
+    nb_of_comments = serializers.IntegerField(source='comments.count', read_only=True)
+
+    class Meta:
+        model = Issue
+        fields = ['id', 'name', 'project', 'author', 'description', 'priority', 'type', 'progress', 'nb_of_comments', 'created_time']
+
+    def validate_project(self, value):
+        user = self.context['request'].user
+        projects = Project.objects.filter(id=value.id, contributed_by__user=user)
+        print(projects)
+        if not Project.objects.filter(id=value.id, contributed_by__user=user).exists():
+            raise serializers.ValidationError("L'utilisateur n'est pas contributeur de ce projet.")
+        return value
+
+
+class CommentDetailSerializer(serializers.ModelSerializer):
 
     issue = IssueListSerializer()
     author = UserListSerializer()
@@ -74,7 +94,7 @@ class CommentDetailSerializer(ModelSerializer):
         fields = ['id', 'issue', 'author', 'description', 'created_time']
 
 
-class CommentListSerializer(ModelSerializer):
+class CommentListSerializer(serializers.ModelSerializer):
 
     issue = IssueListSerializer()
     author = UserListSerializer()

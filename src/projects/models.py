@@ -21,6 +21,12 @@ class Project(models.Model):
 
     def __str__(self) -> str:
         return self.name
+    
+    def is_author(self, user):
+        return self.author == user
+    
+    def is_contributor(self, user):
+        return self.contributed_by.filter(user=user).exists()
 
 
 @receiver(post_save, sender=Project)
@@ -82,6 +88,10 @@ class Issue(models.Model):
 
     def __str__(self) -> str:
         return self.name
+    
+    def is_contributor(self, user):
+        return self.project.is_contributor(user=user)
+
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -90,3 +100,6 @@ class Comment(models.Model):
 
     author = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     issue = models.ForeignKey(to=Issue, on_delete=models.CASCADE, related_name='comments')
+
+    def is_contributor(self, user):
+        return self.issue.is_contributor(user=user)
