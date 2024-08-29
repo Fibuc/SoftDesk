@@ -11,7 +11,7 @@ class ContributorProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contributor
-        fields = ['id', 'user']
+        fields = ['user']
 
 
 class ProjectListSerializer(serializers.ModelSerializer):
@@ -52,6 +52,14 @@ class ProjectModifyCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ['author', 'contributors', 'created_time']
 
 
+class ProjectIssueSerializer(serializers.ModelSerializer):
+    """Serializer du projet lors de son affichage dans les demandes."""
+
+    class Meta:
+        model = Project
+        fields = ['id', 'name']
+
+
 class ContributorSerializer(serializers.ModelSerializer):
     """Serializer des contributeurs."""
     user = serializers.PrimaryKeyRelatedField(
@@ -80,17 +88,17 @@ class ContributorSerializer(serializers.ModelSerializer):
 
 class IssueListSerializer(serializers.ModelSerializer):
     """Serializer de la liste des demandes."""
-    project = ProjectListSerializer()
+    project = ProjectIssueSerializer()
     author = UserListSerializer()
 
     class Meta:
         model = Issue
-        fields = ['id', 'name', 'project', 'author']
+        fields = ['id', 'name', 'project', 'author', 'progress']
 
 
 class IssueDetailSerializer(serializers.ModelSerializer):
     """Serializer du détail des demandes."""
-    project = ProjectListSerializer()
+    project = ProjectIssueSerializer()
     author = UserListSerializer()
     nb_of_comments = serializers.IntegerField(source='comments.count')
 
@@ -149,9 +157,18 @@ class IssueModifySerializer(serializers.ModelSerializer):
         fields = ['name', 'description', 'priority', 'type', 'progress']
 
 
+class IssueCommentSerializer(serializers.ModelSerializer):
+    """Serializer de la demande lors de son affichage dans les commentaires."""
+    project = ProjectIssueSerializer()
+
+    class Meta:
+        model = Issue
+        fields = ['id', 'name', 'project']
+
+
 class CommentDetailSerializer(serializers.ModelSerializer):
     """Serializer du détail d'un commentaire."""
-    issue = IssueListSerializer()
+    issue = IssueCommentSerializer()
     author = UserListSerializer()
 
     class Meta:
@@ -161,12 +178,11 @@ class CommentDetailSerializer(serializers.ModelSerializer):
 
 class CommentListSerializer(serializers.ModelSerializer):
     """Serializer de la liste des commentaires."""
-    issue = IssueListSerializer()
-    author = UserListSerializer()
+    issue = IssueCommentSerializer()
 
     class Meta:
         model = Comment
-        fields = ['id', 'issue', 'author']
+        fields = ['id', 'issue', 'description']
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):

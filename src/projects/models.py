@@ -34,7 +34,7 @@ class Project(models.Model):
 
 @receiver(post_save, sender=Project)
 def create_contributor(sender, instance, created, **kwargs):
-    """Créée une instance de contributor entre le projet et l'auteur du projet
+    """Créée une instance de Contributor entre le projet et l'auteur du projet
     lors de la création d'un projet.
 
     Args:

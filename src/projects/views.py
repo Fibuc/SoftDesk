@@ -57,29 +57,50 @@ class ProjectContributorsView(APIView):
         serializer = ContributorSerializer(
             data=request.data, context={'project': project}
             )
-        if serializer.is_valid():
-            serializer.create(project)
+        if project.is_author(request.user):
+            if serializer.is_valid():
+                serializer.create(project)
+                return Response(
+                    {'success': 'Le contributeur à été créé avec succès.'},
+                    status=status.HTTP_201_CREATED
+                    )
+
             return Response(
-                {'valid': 'Le contributeur à été créé avec succès.'},
-                status=status.HTTP_201_CREATED
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
                 )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+                {
+                    'detail':
+                    "Vous n'avez pas la permission d'effectuer cette action."
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
 
     def delete(self, request, *args, **kwargs):
         project = Project.objects.get(id=kwargs['project_id'])
         user = User.objects.get(id=request.data['user'])
         contributor = Contributor.objects.filter(user=user, project=project)
-        if contributor.exists():
-            contributor.delete()
+        if project.is_author(request.user):
+            if contributor.exists():
+                contributor.delete()
+                return Response(
+                    {'success': 'Le contributeur à été supprimé avec succès.'},
+                    status=status.HTTP_204_NO_CONTENT
+                    )
+
             return Response(
-                {'valid': 'Le contributeur à été supprimé avec succès.'},
-                status=status.HTTP_204_NO_CONTENT
+                {'error': "Aucun contributeur n'a été trouvé avec cet ID."},
+                status=status.HTTP_400_BAD_REQUEST
                 )
 
         return Response(
-            {'error': "Aucun contributeur n'a été trouvé avec cet ID."},
-            status=status.HTTP_400_BAD_REQUEST
+                {
+                    'detail':
+                    "Vous n'avez pas la permission d'effectuer cette action."
+                },
+                status=status.HTTP_403_FORBIDDEN
             )
 
 
