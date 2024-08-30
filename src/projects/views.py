@@ -5,13 +5,19 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from projects.models import Project, Issue, Comment, Contributor
-from projects.serializers import (
-    ProjectDetailSerializer, IssueDetailSerializer, CommentDetailSerializer,
-    ContributorSerializer, IssueCreateSerializer,
-    ProjectModifyCreateSerializer, ProjectListSerializer, IssueListSerializer,
-    CommentListSerializer, CommentCreateSerializer, IssueModifySerializer,
+from projects.serializers.comment_serializers import (
+    CommentDetailSerializer, CommentListSerializer, CommentCreateSerializer,
     CommentModifySerializer
-    )
+)
+from projects.serializers.contributor_serializers import ContributorSerializer
+from projects.serializers.issue_serializers import (
+    IssueDetailSerializer, IssueCreateSerializer, IssueListSerializer,
+    IssueModifySerializer
+)
+from projects.serializers.project_serializers import (
+    ProjectDetailSerializer, ProjectModifyCreateSerializer,
+    ProjectListSerializer
+)
 from projects.permissions import IsAuthorOrReadOnly, IsContributor
 from authentication.models import User
 
