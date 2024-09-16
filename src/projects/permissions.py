@@ -9,6 +9,24 @@ class IsContributor(BasePermission):
         return obj.is_contributor(request.user)
 
 
+class CanModifyResource(BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in ['PATCH', 'PUT']:
+            return obj.author == request.user
+
+        return True
+
+
+class CanDeleteResource(BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method == 'DELETE':
+            return obj.author == request.user
+
+        return True
+
+
 class IsAuthorOrReadOnly(BasePermission):
 
     def has_object_permission(self, request, view, obj):

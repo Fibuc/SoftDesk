@@ -25,7 +25,7 @@ class IssueAdmin(admin.ModelAdmin):
     """
     list_display = (
         'name', 'project', 'author', 'priority', 'type', 'progress',
-        'created_time'
+        'created_time', 'assigned_user'
         )
 
 

@@ -15,7 +15,8 @@ Ensuite déplacez-vous dans le dossier créé par le clonage nommé `SoftDesk` a
 ```bash
 cd SoftDesk
 ```
-### Installation de Pipenv
+
+### Installation via `pipenv`
 
 Dans ce projet, on va utiliser `Pipenv` afin de gérer les dépendances.
 Si vous avez déjà `Pipenv`, vous pouvez direment passer à l'étape de création de l'environnement virtuel.
@@ -58,13 +59,54 @@ Vous pouvez également choisir d'activer votre environnement virtuel via le shel
 ```bash
 pipenv shell
 ```
-Puis
+Puis faite votre commande comme dans l'exemple.
 
 ```bash
+# Exemple
 python manage.py runserver
 ```
 
 Veillez également à bien vous situer sur la branche "main" lors de l'exécution de **main.py**.
+
+### Installation via `pip`
+
+Si vous souhaitez utiliser un environnement virtuel classique via `pip` alors il vous suffit de créer un environnement virtuel que vous devrez nommer `env` afin d'éviter son push dans le repository. Si toutefois, vous voulez utiliser un autre nom d'environnement, ajoutez-le au fichier `.gitignore`.
+
+Ouvrez le terminal et rendez-vous dans le dossier du dépôt local du projet, puis tapez la commande suivante :
+
+```bash
+python -m venv nom_de_l_environnement
+```
+
+#### Activez votre environnement virtuel
+
+Pour activer votre environnement virtuel, la méthode est différente selon votre système d'exploitation.
+
+##### Linux & MacOS :
+```bash
+source chemin_de_votre_env/bin/activate
+```
+##### Windows : 
+
+CMD :
+```bash
+chemin_de_votre_env\Scripts\activate.bat
+```
+
+PowerShell :
+```bash
+chemin_de_votre_env\Scripts\activate.ps1
+```
+
+Veillez également à bien vous situer sur la branche "main" lors de l'exécution de **main.py**.
+
+### Installez les packages
+
+Lorsque vous aurez activé votre environnement virtuel, vous aurez également besoin d'installer les packages essentiels pour le lancement disponibles dans le requirements.txt.
+
+```bash
+pip install -r requirements.txt
+```
 
 ### Lancer le serveur
 

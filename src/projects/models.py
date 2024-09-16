@@ -89,6 +89,10 @@ class Issue(models.Model):
         )
     created_time = models.DateTimeField(auto_now_add=True)
 
+    assigned_user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='assigned_to', blank=True, null=True
+    )
     author = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE
         )
@@ -103,7 +107,7 @@ class Issue(models.Model):
         return self.project.is_contributor(user=user)
 
     def is_author(self, user):
-        return self.project.is_author(user=user)
+        return self.author == user
 
 
 class Comment(models.Model):
@@ -124,4 +128,4 @@ class Comment(models.Model):
         return self.issue.is_contributor(user=user)
 
     def is_author(self, user):
-        return self.issue.is_author(user=user)
+        return self.author == user

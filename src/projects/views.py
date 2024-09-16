@@ -18,7 +18,9 @@ from projects.serializers.project_serializers import (
     ProjectDetailSerializer, ProjectModifyCreateSerializer,
     ProjectListSerializer
 )
-from projects.permissions import IsAuthorOrReadOnly, IsContributor
+from projects.permissions import (
+    IsAuthorOrReadOnly, IsContributor, CanDeleteResource, CanModifyResource
+)
 from authentication.models import User
 
 
@@ -56,7 +58,10 @@ class MultipleSerializerMixin:
 
 class ProjectContributorsView(APIView):
     """APIView pour créer et supprimer des contributeurs d'un projet."""
-    permission_classes = [IsAuthenticated, IsContributor, IsAuthorOrReadOnly]
+    permission_classes = [
+        IsAuthenticated, IsContributor, IsAuthorOrReadOnly,
+        CanDeleteResource, CanModifyResource
+    ]
 
     def post(self, request, *args, **kwargs):
         project = Project.objects.get(id=kwargs['project_id'])
@@ -116,7 +121,10 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
     detail_serializer_class = ProjectDetailSerializer
     create_serializer_class = ProjectModifyCreateSerializer
     modify_serializer_class = ProjectModifyCreateSerializer
-    permission_classes = [IsAuthenticated, IsContributor, IsAuthorOrReadOnly]
+    permission_classes = [
+        IsAuthenticated, IsContributor, IsAuthorOrReadOnly,
+        CanDeleteResource, CanModifyResource
+    ]
 
     def get_queryset(self):
         return Project.objects.filter(contributed_by__user=self.request.user)
@@ -131,7 +139,10 @@ class IssueViewSet(MultipleSerializerMixin, ModelViewSet):
     detail_serializer_class = IssueDetailSerializer
     create_serializer_class = IssueCreateSerializer
     modify_serializer_class = IssueModifySerializer
-    permission_classes = [IsAuthenticated, IsContributor, IsAuthorOrReadOnly]
+    permission_classes = [
+        IsAuthenticated, IsContributor, IsAuthorOrReadOnly,
+        CanDeleteResource, CanModifyResource
+    ]
 
     def get_queryset(self):
         user = self.request.user
@@ -144,7 +155,10 @@ class CommentViewSet(MultipleSerializerMixin, ModelViewSet):
     detail_serializer_class = CommentDetailSerializer
     create_serializer_class = CommentCreateSerializer
     modify_serializer_class = CommentModifySerializer
-    permission_classes = [IsAuthenticated, IsContributor, IsAuthorOrReadOnly]
+    permission_classes = [
+        IsAuthenticated, IsContributor, IsAuthorOrReadOnly,
+        CanDeleteResource, CanModifyResource
+    ]
 
     def get_queryset(self):
         user = self.request.user
