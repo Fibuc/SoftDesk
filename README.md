@@ -19,12 +19,12 @@ cd SoftDesk
 ### Installation via `pipenv`
 
 Dans ce projet, on va utiliser `Pipenv` afin de gérer les dépendances.
-Si vous avez déjà `Pipenv`, vous pouvez direment passer à l'étape de création de l'environnement virtuel.
+Si vous avez déjà `Pipenv`, vous pouvez directement passer à l'étape de création de l'environnement virtuel.
 
 Sinon, voici comment installer basiquement `Pipenv` sur votre système d'exploitation :
 
 ```bash
-pip intall pipenv
+pip install pipenv
 ```
 
 Pour une installation personnalisée, vous pouvez vous référer à la [documentation de Pipenv](https://pipenv.pypa.io/en/latest/installation.html)
